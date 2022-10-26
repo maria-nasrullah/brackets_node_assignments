@@ -1,0 +1,23 @@
+{
+  "name": "brackets",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lonely.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maria-nasrullah/brackets_node_assignments.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maria-nasrullah/brackets_node_assignments/issues"
+  },
+  "homepage": "https://github.com/maria-nasrullah/brackets_node_assignments#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
