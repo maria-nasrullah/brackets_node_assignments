@@ -34,16 +34,13 @@ const deleteUser=(userId)=>{
 
 const editUser=(userId,body)=>{
    userId=Number(userId);
-   users.find(user=>
-      {
-         if(user.id===userId){
+   const user=users.find(user=>user.id==userId);
+   
             user.id=body.id?body.id:user.id;
             user.name=body.name?body.name:user.name;
             user.profession=body.profession?body.profession:user.profession;
-         }
-      }
         
-      )
+        
       fs.writeFileSync('users.json', JSON.stringify(users), 'utf-8');
 return "updated";   
    }
