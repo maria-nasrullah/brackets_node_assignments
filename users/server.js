@@ -45,7 +45,7 @@ app.put('/users/:userID',(req,res)=>{
     const {userID}=req.params;
     const body=req.body;
     console.log(body)
-    const user=editUser(userID,body);
+    const user=updateUser(userID,body);
     res.send(user)
 })
 app.listen(PORT,()=>console.log(`listing on port ${PORT}`))
