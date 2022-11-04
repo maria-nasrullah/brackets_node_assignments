@@ -14,7 +14,7 @@ router.get('/all',userController.findAllUsers);
 //find user by id
  router.get('/:id',userController.findUserById);
 
-//find user by email
+//find user by age
  router.post('/single',userController.findUserByAttribute);
 
 //update User
