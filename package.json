@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/maria-nasrullah/brackets_node_assignments#readme",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "mongo": "^0.1.0",
+    "mongoose": "^6.7.1"
   }
 }
