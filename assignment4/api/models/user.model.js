@@ -7,6 +7,7 @@ const createUser= async body=>
     {
         const user=new User(
             {
+                _id: mongoose.Types.ObjectId(),
                 name:body.name,
                 age:body.age,
                 email:body.email,
