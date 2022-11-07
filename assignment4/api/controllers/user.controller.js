@@ -4,7 +4,7 @@ const UserModel= require('../models/user.model');
 //create user
 const addUser= async (req,res) => 
     {
-        const {status,data,message}= await UserModel.createUser(req.body);
+        const {data,message}= await UserModel.createUser(req.body);
         return res.status(201).json(
             {
                 data:data,
@@ -91,6 +91,16 @@ const updateOneUser =async(req, res) =>
             })
     }
 
+// delete one user without id
+const deleteSingleUser=async res =>
+    {
+        const {message}= await UserModel.removeSingleUser();
+        return res.status(200).json(
+            { 
+                message:message
+            })
+    }
+
 module.exports={
     addUser,
     findAllUsers,
@@ -99,5 +109,6 @@ module.exports={
     updateUser,
     updateManyUsers,
     deleteManyUsers,
-    updateOneUser
+    updateOneUser,
+    deleteSingleUser,
     };

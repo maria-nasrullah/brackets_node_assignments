@@ -29,6 +29,9 @@ router.delete('/deleteMany',userController.deleteManyUsers);
 //find one and update
 router.patch('/single/update',userController.updateOneUser);
 
+//find one and delete
+router.delete('/single/delete',userController.deleteSingleUser);
+
 module.exports=router;
 
 

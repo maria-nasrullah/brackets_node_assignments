@@ -13,7 +13,7 @@ const createUser= async body=>
                 email:body.email,
                 isMarried:body.isMarried,
             });
-            
+
         const createdUser= await user.save();
         return {
             data:createdUser,
@@ -125,6 +125,26 @@ const changeOneUser= async(userBody)=>
         }
     }
 
+//delete one user without id
+const removeSingleUser = async () =>
+    {
+        try{
+            const user=await User.findOneAndDelete({email:'izza@gmail.com'},function (err, docs) {
+                if (err){
+                    console.log(err)
+                }
+                else{
+                    console.log("Deleted User : ", docs);
+                }
+            });
+            return {
+                messsage:"Sucessfully deleted user"  
+            }
+        }
+        catch(err){
+            console.log(err);
+        }   
+    }
 
 module.exports ={
     createUser,
@@ -134,5 +154,6 @@ module.exports ={
     changeUser,
     changeManyUsers,
     removeManyUsers,
-    changeOneUser
+    changeOneUser,
+    removeSingleUser
     };
