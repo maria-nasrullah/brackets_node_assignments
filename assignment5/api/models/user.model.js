@@ -5,26 +5,35 @@ const User= require('../schemas/user.schemas');
 //create user
 const createUser= async body=>
     {
-        const user=new User(
-            {
-                _id: mongoose.Types.ObjectId(),
-                firstName:body.firstName,
-                lastName:body.lastName,
-                email:body.email,
-                phoneNumber:body.phoneNumber,
-                city:body.city,
-                state:body.state,
-                zipCode:body.zipCode,
-                status:body.status,
-                userType:body.userType,
-                payment:body.payment,
-            });
-
-        const createdUser= await user.save();
-        return {
-            data:createdUser,
-            message:"Sucessfully created user"
+        if(body.userType==='/Customer/i'||body.userType==='/Admin/i'){
+            const user=new User(
+                {
+                    _id: mongoose.Types.ObjectId(),
+                    firstName:body.firstName,
+                    lastName:body.lastName,
+                    email:body.email,
+                    phoneNumber:body.phoneNumber,
+                    city:body.city,
+                    state:body.state,
+                    zipCode:body.zipCode,
+                    status:body.status,
+                    userType:body.userType,
+                    payment:body.payment,
+                });
+    
+            const createdUser= await user.save();
+            return {
+                data:createdUser,
+                message:"Sucessfully created user"
+            }
         }
+        else{
+            return {
+                data:null,
+                message:"useType should be admin or customer"
+            }
+        }
+       
     }
 
 //get users
