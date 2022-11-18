@@ -1,0 +1,48 @@
+//importing model
+const userModel = require("../models/users");
+
+//creating user object
+const createUser = async (user) => {
+  try {
+    const newUser = new userModel(user);
+    return await newUser.save();
+  } catch (error) {
+    throw error;
+  }
+};
+
+//finding user by email
+const getExistingUser = async ({ email, userName }) => {
+  try {
+    const existedUser = await userModel
+      .findOne({
+        $or: [{ email: { $eq: email } }, { userName: { $eq: userName } }],
+      })
+      .lean();
+    return existedUser;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//finding user by id
+const getUserById = async (userId) => {
+  try {
+    return await userModel.findById(userId).select("-password").lean();
+  } catch (error) {
+    throw error;
+  }
+};
+
+//update user's any field
+const updateUser = async (userId, toBeUpdate) => {
+  try {
+    return await userModel
+      .findByIdAndUpdate(userId, toBeUpdate, { new: true })
+      .lean();
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports = { createUser, getExistingUser, getUserById, updateUser };
