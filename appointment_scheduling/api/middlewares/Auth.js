@@ -22,7 +22,7 @@ module.exports = async (req, res, next) => {
         message: "You're unauthorized to do this action",
       });
     }
-    req.tokenId = decoded._id;
+    req.token = decoded;
     await next();
   } catch (error) {
     res.status(501).json({ error: "INTERNAL SERVER ERROR" });

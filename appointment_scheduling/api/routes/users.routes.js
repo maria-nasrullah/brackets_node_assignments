@@ -25,8 +25,12 @@ route.patch(
 
 route.patch(
   "/:userId/upload",
+  AuthMiddleware,
+  AuthUserMiddleware,
   upload.single("avatar"),
   userController.uploadProfileImage
 );
+
+route.post("/logout", AuthMiddleware, AuthUserMiddleware, userController.logout);
 
 module.exports = route;

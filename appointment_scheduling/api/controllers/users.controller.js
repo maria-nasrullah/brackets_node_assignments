@@ -1,6 +1,7 @@
 //adding dependences
 const bcrypt = require("bcrypt");
 const JWT = require("jsonwebtoken");
+const { v4: uuid4 } = require("uuid");
 
 //importing services
 const users = require("../services/users.services");
@@ -74,6 +75,7 @@ const login = async (req, res) => {
     }
 
     //embedding token
+    const uniqueKey = uuid4();
     const payload = {
       _id: matchedUser._id,
       firsName: matchedUser.firstName,
@@ -83,13 +85,42 @@ const login = async (req, res) => {
       password: matchedUser.password,
       number: matchedUser.number,
       address: matchedUser.address,
+      uniqueKey,
     };
     const token = JWT.sign(payload, secretKey, { expiresIn: "12hr" });
 
-    res.status(200).json({
-      messsage: "login successful",
-      token,
-    });
+    //saving unique key
+    const userId = matchedUser._id.toString();
+    const toBeUpdate = { $addToSet: { uniqueKeys: uniqueKey } };
+    const updatedUser = await users.updateUser(userId, toBeUpdate);
+
+    if (updatedUser) {
+      res.status(200).json({
+        messsage: "login successful",
+        token,
+      });
+    }
+  } catch (error) {
+    res.status(501).json({ error: "INTERNAL SERVER ERROR" });
+  }
+};
+
+//logout user
+const logout = async (req, res) => {
+  try {
+    const { user } = req;
+    const { token } = req;
+    const uniqueKey = token.uniqueKey;
+   // const uniqueKeys = user.uniqueKeys.filter((key) => uniqueKey !== key);
+    const userId = user._id.toString();
+   // const toBeUpdate = { uniqueKeys };
+   const toBeUpdate={uniqueKeys:[]};
+    const updatedUser = await users.updateUser(userId, toBeUpdate);
+    if (updatedUser) {
+      res.status(200).json({
+        msg: "you are logged out",
+      });
+    }
   } catch (error) {
     res.status(501).json({ error: "INTERNAL SERVER ERROR" });
   }
@@ -129,4 +160,4 @@ const uploadProfileImage = async (req, res) => {
   }
 };
 
-module.exports = { register, login, update, uploadProfileImage };
+module.exports = { register, login, update, uploadProfileImage, logout };
