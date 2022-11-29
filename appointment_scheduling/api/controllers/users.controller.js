@@ -164,7 +164,7 @@ const OTPVerification=async(req,res)=>{
 
     //saving unique key
     const matchedUserId = verifiedUser._id.toString();
-    const toBeUpdate = { $addToSet: { uniqueKeys: uniqueKey } };
+    const toBeUpdate = { $addToSet: { uniqueKeys: uniqueKey },OTP:"" };
     const updatedUser = await users.updateUser(matchedUserId, toBeUpdate);
 
     if (updatedUser) {
