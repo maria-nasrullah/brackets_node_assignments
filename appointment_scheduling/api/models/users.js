@@ -28,8 +28,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
-    number: {
-      type: Number,
+    phoneNumber: {
+      type: String,
+      trim:true,
+      unique:true
     },
     address: {
       type: String,
@@ -40,6 +42,9 @@ const userSchema = new mongoose.Schema(
     },
     uniqueKeys:{
       type:[String]
+    },
+    OTP:{
+      type:String
     }
   },
   {

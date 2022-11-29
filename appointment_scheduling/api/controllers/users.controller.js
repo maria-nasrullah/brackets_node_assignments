@@ -2,12 +2,21 @@
 const bcrypt = require("bcrypt");
 const JWT = require("jsonwebtoken");
 const { v4: uuid4 } = require("uuid");
+const {randomBytes: randomBytesCb}=require('crypto');
+const {promisify}=require('util');
 
 //importing services
 const users = require("../services/users.services");
 
-//importing secret key
-const { secretKey } = require("../../config/credentials");
+
+//creating twilio client
+const client=require('twilio')(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_ACCOUNT_AUTH_TOKEN
+)
+
+const randomBytes=promisify(randomBytesCb)
+
 
 //methods
 
@@ -46,7 +55,7 @@ const register = async (req, res) => {
   }
 };
 
-//login user
+//login user -- part1
 const login = async (req, res) => {
   try {
     const { email, userName, password } = req.body;
@@ -74,25 +83,89 @@ const login = async (req, res) => {
       });
     }
 
-    //embedding token
+    console.log(matchedUser.phoneNumber);
+const buff=await randomBytes(5);
+const OTP=buff.toString('hex');
+
+console.log(`${buff.length} sized OTP generated as ${OTP}`);
+
+//message sending
+const sentSMS= await client.messages.create({
+  body:OTP,
+  messagingServiceSid:process.env.TWILIO_MESSAGING_SERVICE_SID,
+  to:matchedUser.phoneNumber
+})
+
+//updating user doc
+const updatedUser=await users.updateUser(matchedUser._id,{OTP})
+
+res.status(200).json({
+  msg:"Please enter the OTP"
+})
+
+    // //embedding token
+    // const uniqueKey = uuid4();
+    // const payload = {
+    //   _id: matchedUser._id,
+    //   firsName: matchedUser.firstName,
+    //   lastName: matchedUser.lastName,
+    //   email: matchedUser.email,
+    //   userName: matchedUser.userName,
+    //   password: matchedUser.password,
+    //   number: matchedUser.number,
+    //   address: matchedUser.address,
+    //   uniqueKey,
+    // };
+    // const token = JWT.sign(payload, process.env.SECRET_KEY, { expiresIn: "12hr" });
+
+    // //saving unique key
+    // const userId = matchedUser._id.toString();
+    // const toBeUpdate = { $addToSet: { uniqueKeys: uniqueKey } };
+    // const updatedUser = await users.updateUser(userId, toBeUpdate);
+
+    // if (updatedUser) {
+    //   res.status(200).json({
+    //     messsage: "login successful",
+    //     token,
+    //   });
+    // }
+
+  } catch (error) {
+    res.status(501).json({ error: "INTERNAL SERVER ERROR" });
+  }
+};
+
+//login user -- part2
+const OTPVerification=async(req,res)=>{
+  try {
+    const {userId}=req.params;
+    const {OTP}=req.body;
+    const verifiedUser=await users.verifyOTP(userId,OTP);
+    if(!verifiedUser){
+      return res.status(401).json({
+        msg:"Verification failed"
+      })
+    }
+    
+     //embedding token
     const uniqueKey = uuid4();
     const payload = {
-      _id: matchedUser._id,
-      firsName: matchedUser.firstName,
-      lastName: matchedUser.lastName,
-      email: matchedUser.email,
-      userName: matchedUser.userName,
-      password: matchedUser.password,
-      number: matchedUser.number,
-      address: matchedUser.address,
+      _id: verifiedUser._id,
+      firsName: verifiedUser.firstName,
+      lastName: verifiedUser.lastName,
+      email: verifiedUser.email,
+      userName: verifiedUser.userName,
+      password: verifiedUser.password,
+      number: verifiedUser.number,
+      address: verifiedUser.address,
       uniqueKey,
     };
-    const token = JWT.sign(payload, secretKey, { expiresIn: "12hr" });
+    const token = JWT.sign(payload, process.env.SECRET_KEY, { expiresIn: "12hr" });
 
     //saving unique key
-    const userId = matchedUser._id.toString();
+    const matchedUserId = verifiedUser._id.toString();
     const toBeUpdate = { $addToSet: { uniqueKeys: uniqueKey } };
-    const updatedUser = await users.updateUser(userId, toBeUpdate);
+    const updatedUser = await users.updateUser(matchedUserId, toBeUpdate);
 
     if (updatedUser) {
       res.status(200).json({
@@ -100,10 +173,11 @@ const login = async (req, res) => {
         token,
       });
     }
+    
   } catch (error) {
     res.status(501).json({ error: "INTERNAL SERVER ERROR" });
   }
-};
+}
 
 //logout user
 const logout = async (req, res) => {
@@ -114,6 +188,7 @@ const logout = async (req, res) => {
    // const uniqueKeys = user.uniqueKeys.filter((key) => uniqueKey !== key);
     const userId = user._id.toString();
    // const toBeUpdate = { uniqueKeys };
+   //assignment
    const toBeUpdate={uniqueKeys:[]};
     const updatedUser = await users.updateUser(userId, toBeUpdate);
     if (updatedUser) {
@@ -160,4 +235,4 @@ const uploadProfileImage = async (req, res) => {
   }
 };
 
-module.exports = { register, login, update, uploadProfileImage, logout };
+module.exports = { register, login, update, uploadProfileImage, logout,OTPVerification };

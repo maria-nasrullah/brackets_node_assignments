@@ -33,4 +33,6 @@ route.patch(
 
 route.post("/logout", AuthMiddleware, AuthUserMiddleware, userController.logout);
 
+route.post("/verify_OTP/:userId",userController.OTPVerification)
+
 module.exports = route;

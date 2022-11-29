@@ -1,3 +1,4 @@
+require('dotenv').config()
 //adding dependencies
 const express = require("express");
 const http = require("http");
@@ -8,25 +9,20 @@ const bodyParser = require("body-parser");
 const { connectDB } = require("./config/database");
 
 //port assignment
-const PORT = 3000;
+const PORT = 3990;
 
 //creating app
 const app = express();
 
 //importing routes
 const userRouter = require("./api/routes/users.routes");
+const twilioRouter = require("./api/routes/twilio.routes");
 
 //database connection
 connectDB();
 
 //getting data
 app.use(express.json({ extended: false }));
-
-//using routes
-app.use("/users", userRouter);
-
-//creating server
-const server = http.createServer(app);
 
 /*  HANDLING CORS */
 app.options("", cors()); // enable pre-flight request for ALL requests
@@ -46,6 +42,21 @@ app.use(function (req, res, next) {
   );
   next();
 });
+
+//using routes
+//testing route
+app.get("/", (req, res) => {
+  res.status("200").json({
+    msg: "server connected",
+  });
+});
+
+app.use("/users", userRouter);
+
+app.use("/twilio", twilioRouter);
+
+//creating server
+const server = http.createServer(app);
 
 //listening server
 server.listen(PORT, () => {
