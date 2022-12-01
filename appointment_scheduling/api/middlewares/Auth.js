@@ -1,9 +1,6 @@
 //adding dependencies
 const JWT = require("jsonwebtoken");
 
-//importing seceret key
-const { secretKey } = require("../../config/credentials");
-
 //Authenticatation
 module.exports = async (req, res, next) => {
   try {
@@ -14,14 +11,14 @@ module.exports = async (req, res, next) => {
       });
     }
     token = token.split(" ")[1];
-
     //getting decoded token
-    const decoded = JWT.verify(token, secretKey);
+    const decoded = JWT.verify(token, process.env.SECRET_KEY);
     if (!decoded._id) {
       return res.status(400).json({
         message: "You're unauthorized to do this action",
       });
     }
+
     req.token = decoded;
     await next();
   } catch (error) {

@@ -1,37 +1,36 @@
 //adding dependencies
 const mongoose = require("mongoose");
+const { SYSTEM_ROLES_ENUM } = require("../../config/constants");
 
 const userSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
-      require: true,
+      required: true,
       trim: true,
     },
     lastName: {
       type: String,
-      require: true,
+      required: true,
       trim: true,
     },
     userName: {
       type: String,
-      require: true,
+      required: true,
       unique: true,
       trim: true,
     },
     email: {
       type: String,
-      require: true,
+      required: true,
       unique: true,
     },
     password: {
       type: String,
-      require: true,
+      required: true,
     },
     phoneNumber: {
       type: String,
-      trim:true,
-      unique:true
     },
     address: {
       type: String,
@@ -40,16 +39,19 @@ const userSchema = new mongoose.Schema(
     profileImage: {
       type: String,
     },
-    uniqueKeys:{
-      type:[String]
+    uniqueKeys: {
+      type: [String],
     },
-    OTP:{
-      type:String
-    }
+    OTP: {
+      type: String,
+    },
+    systemRole: {
+      type: String,
+      enum: SYSTEM_ROLES_ENUM,
+    },
   },
   {
     timestamps: true,
-    strict: true,
   }
 );
 

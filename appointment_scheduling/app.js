@@ -1,4 +1,4 @@
-require('dotenv').config()
+require("dotenv").config();
 //adding dependencies
 const express = require("express");
 const http = require("http");
@@ -17,6 +17,7 @@ const app = express();
 //importing routes
 const userRouter = require("./api/routes/users.routes");
 const twilioRouter = require("./api/routes/twilio.routes");
+const appointmentRouter = require("./api/routes/appointments.routes");
 
 //database connection
 connectDB();
@@ -54,6 +55,8 @@ app.get("/", (req, res) => {
 app.use("/users", userRouter);
 
 app.use("/twilio", twilioRouter);
+
+app.use("/appointment", appointmentRouter);
 
 //creating server
 const server = http.createServer(app);

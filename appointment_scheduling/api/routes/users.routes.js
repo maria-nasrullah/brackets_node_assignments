@@ -8,22 +8,24 @@ const upload = require("../middlewares/multer");
 
 //importing controller
 const userController = require("../controllers/users.controller");
+const AuthorizeTo = require("../middlewares/Authorization");
+const { SYSTEM_ROLES_ENUM } = require("../../config/constants");
 
 //initializing route
-const route = express.Router();
+const router = express.Router();
 
-route.post("/registeration", userController.register);
+router.post("/registeration", userController.register);
 
-route.post("/login", userController.login);
+router.post("/login", userController.login);
 
-route.patch(
+router.patch(
   "/:userId/update",
   AuthMiddleware,
   AuthUserMiddleware,
   userController.update
 );
 
-route.patch(
+router.patch(
   "/:userId/upload",
   AuthMiddleware,
   AuthUserMiddleware,
@@ -31,8 +33,38 @@ route.patch(
   userController.uploadProfileImage
 );
 
-route.post("/logout", AuthMiddleware, AuthUserMiddleware, userController.logout);
+router.post(
+  "/logout",
+  AuthMiddleware,
+  AuthUserMiddleware,
+  userController.logout
+);
 
-route.post("/verify_OTP/:userId",userController.OTPVerification)
+router.post("/verify_OTP/:userId", userController.OTPVerification);
 
-module.exports = route;
+//FOR ADMIN
+router.post(
+  "/create",
+  AuthMiddleware,
+  AuthUserMiddleware,
+  AuthorizeTo(SYSTEM_ROLES_ENUM.SYS_ADMIN),
+  userController.register
+);
+
+router.patch(
+  "/:userId",
+  AuthMiddleware,
+  AuthUserMiddleware,
+  AuthorizeTo(SYSTEM_ROLES_ENUM.SYS_ADMIN),
+  userController.updateUser
+);
+
+router.delete(
+  "/:userId",
+  AuthMiddleware,
+  AuthUserMiddleware,
+  AuthorizeTo(SYSTEM_ROLES_ENUM.SYS_ADMIN),
+  userController.deleteUser
+);
+
+module.exports = router;

@@ -45,14 +45,35 @@ const updateUser = async (userId, toBeUpdate) => {
   }
 };
 
-const verifyOTP=async(userId,OTP)=>{
+const verifyOTP = async (userId, OTP) => {
   try {
-    const user=await userModel.findOne({_id:userId,OTP}).lean().select("-password");
+    const user = await userModel
+      .findOne({ _id: userId, OTP })
+      .lean()
+      .select("-password");
     console.log("Verified User");
     return user;
   } catch (error) {
     throw error;
   }
+};
+
+
+//remove user  __ADMIN
+const removeUser=async(userId)=>{
+  try {
+    console.log("i");
+    return await userModel.findByIdAndRemove(userId);
+  } catch (error) {
+    throw error;
+  }
 }
 
-module.exports = { createUser, getExistingUser, getUserById, updateUser,verifyOTP };
+module.exports = {
+  createUser,
+  getExistingUser,
+  getUserById,
+  updateUser,
+  verifyOTP,
+  removeUser,
+};
