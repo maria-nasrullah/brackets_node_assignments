@@ -62,7 +62,6 @@ const verifyOTP = async (userId, OTP) => {
 //remove user  __ADMIN
 const removeUser=async(userId)=>{
   try {
-    console.log("i");
     return await userModel.findByIdAndRemove(userId);
   } catch (error) {
     throw error;

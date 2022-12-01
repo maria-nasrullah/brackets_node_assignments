@@ -4,11 +4,11 @@ const express = require("express");
 //importing middlewares
 const AuthMiddleware = require("../middlewares/Auth");
 const AuthUserMiddleware = require("../middlewares/AuthUser");
+const AuthorizeTo = require("../middlewares/Authorization");
 const upload = require("../middlewares/multer");
 
 //importing controller
 const userController = require("../controllers/users.controller");
-const AuthorizeTo = require("../middlewares/Authorization");
 const { SYSTEM_ROLES_ENUM } = require("../../config/constants");
 
 //initializing route
@@ -19,14 +19,14 @@ router.post("/registeration", userController.register);
 router.post("/login", userController.login);
 
 router.patch(
-  "/:userId/update",
+  "/update",
   AuthMiddleware,
   AuthUserMiddleware,
   userController.update
 );
 
 router.patch(
-  "/:userId/upload",
+  "/upload",
   AuthMiddleware,
   AuthUserMiddleware,
   upload.single("avatar"),

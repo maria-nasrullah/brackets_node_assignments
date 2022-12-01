@@ -99,7 +99,7 @@ const login = async (req, res) => {
 
     res.status(200).json({
       message: "Please enter the OTP",
-      userId: updatedUser,
+      userId: updatedUser._id,
     });
   } catch (error) {
     res.status(501).json({ error: "INTERNAL SERVER ERROR" });

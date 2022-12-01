@@ -18,6 +18,7 @@ const app = express();
 const userRouter = require("./api/routes/users.routes");
 const twilioRouter = require("./api/routes/twilio.routes");
 const appointmentRouter = require("./api/routes/appointments.routes");
+const patientRouter = require("./api/routes/patients.routes");
 
 //database connection
 connectDB();
@@ -57,6 +58,8 @@ app.use("/users", userRouter);
 app.use("/twilio", twilioRouter);
 
 app.use("/appointment", appointmentRouter);
+
+app.use("/patients", patientRouter);
 
 //creating server
 const server = http.createServer(app);
