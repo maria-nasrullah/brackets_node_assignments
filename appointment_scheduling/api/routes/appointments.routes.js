@@ -7,6 +7,8 @@ const AppointmentController = require("../controllers/appointments.controller");
 const Auth = require("../middlewares/Auth");
 const AuthorizeTo = require("../middlewares/Authorization");
 const AuthUser = require("../middlewares/AuthUser");
+const { validateData } = require("../middlewares/validation");
+const appointmentSchema = require("../validations/appointments.validation-schema");
 
 const router = express.Router();
 
@@ -16,6 +18,7 @@ router.post(
   Auth,
   AuthUser,
   AuthorizeTo(SYSTEM_ROLES_ENUM.ASSISTANT),
+  validateData(appointmentSchema, "body"),
   AppointmentController.appointmentSchedule
 );
 

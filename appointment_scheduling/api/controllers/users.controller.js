@@ -81,26 +81,53 @@ const login = async (req, res) => {
       });
     }
 
-    console.log(matchedUser.phoneNumber);
-    const buff = await randomBytes(5);
-    const OTP = buff.toString("hex");
+    // const buff = await randomBytes(5);
+    // const OTP = buff.toString("hex");
 
-    console.log(`${buff.length} sized OTP generated as ${OTP}`);
+    // console.log(`${buff.length} sized OTP generated as ${OTP}`);
 
-    //message sending
-    const sentSMS = await client.messages.create({
-      body: OTP,
-      messagingServiceSid: process.env.TWILIO_MESSAGING_SERVICE_SID,
-      to: matchedUser.phoneNumber,
+    // //message sending
+    // const sentSMS = await client.messages.create({
+    //   body: OTP,
+    //   messagingServiceSid: process.env.TWILIO_MESSAGING_SERVICE_SID,
+    //   to: matchedUser.phoneNumber,
+    // });
+
+    // //updating user doc
+    // const updatedUser = await users.updateUser(matchedUser._id, { OTP });
+
+    // res.status(200).json({
+    // message: "Please enter the OTP",
+    // userId: updatedUser._id,
+    // });
+
+    //embedding token
+    const uniqueKey = uuid4();
+    const payload = {
+      _id: matchedUser._id,
+      firsName: matchedUser.firstName,
+      lastName: matchedUser.lastName,
+      email: matchedUser.email,
+      userName: matchedUser.userName,
+      password: matchedUser.password,
+      number: matchedUser.number,
+      address: matchedUser.address,
+      uniqueKey,
+    };
+    const token = JWT.sign(payload, process.env.SECRET_KEY, {
+      expiresIn: "12hr",
     });
+    //saving unique key
+    const matchedUserId = matchedUser._id.toString();
+    const toBeUpdate = { $addToSet: { uniqueKeys: uniqueKey }, OTP: "" };
+    const updatedUser = await users.updateUser(matchedUserId, toBeUpdate);
 
-    //updating user doc
-    const updatedUser = await users.updateUser(matchedUser._id, { OTP });
-
-    res.status(200).json({
-      message: "Please enter the OTP",
-      userId: updatedUser._id,
-    });
+    if (updatedUser) {
+      res.status(200).json({
+        messsage: "login successful",
+        token,
+      });
+    }
   } catch (error) {
     res.status(501).json({ error: "INTERNAL SERVER ERROR" });
   }

@@ -7,7 +7,6 @@ const AuthorizeTo = (...systemRoles) => {
           message: "You are unauthorize.",
         });
       }
-      console.log(user.systemRole);
       next();
     } catch (error) {
       res.status(501).json({ error: "INTERNAL SERVER ERROR" });

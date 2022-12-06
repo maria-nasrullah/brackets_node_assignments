@@ -7,6 +7,7 @@ const appointmentSchedule = async (req, res) => {
     const scheduledAppointment = await Appointments.scheduledAppointment(
       appointment
     );
+    console.log("app");
     res.status(201).json({
       message: "Appointment successfully created",
       scheduledAppointment,
