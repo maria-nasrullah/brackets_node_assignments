@@ -2,8 +2,12 @@ require("dotenv").config();
 //adding dependencies
 const express = require("express");
 const http = require("http");
+const { Server } = require("socket.io");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+
+//socket importing
 
 //importing database
 const { connectDB } = require("./config/database");
@@ -20,12 +24,18 @@ const twilioRouter = require("./api/routes/twilio.routes");
 const appointmentRouter = require("./api/routes/appointments.routes");
 const patientRouter = require("./api/routes/patients.routes");
 const analyticRouter = require("./api/routes/analytics.routes");
+const { listenEvents } = require("./socket");
+// const socket = require("./socket");
 
 //database connection
 connectDB();
 
 //getting data
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json({ extended: false }));
+
+//using cookie
+app.use(cookieParser());
 
 /*  HANDLING CORS */
 app.options("", cors()); // enable pre-flight request for ALL requests
@@ -66,6 +76,14 @@ app.use("/analytics", analyticRouter);
 
 //creating server
 const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
+
+listenEvents(io);
 
 //listening server
 server.listen(PORT, () => {

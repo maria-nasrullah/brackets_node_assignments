@@ -67,4 +67,6 @@ router.delete(
   userController.deleteUser
 );
 
+router.get("/all",userController.getAllUsers)
+
 module.exports = router;

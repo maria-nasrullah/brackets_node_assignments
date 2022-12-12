@@ -39,7 +39,7 @@ const updateUser = async (userId, toBeUpdate) => {
   try {
     return await userModel
       .findByIdAndUpdate(userId, toBeUpdate, { new: true })
-      .lean();
+      .lean().select("-password");
   } catch (error) {
     throw error;
   }
@@ -58,15 +58,23 @@ const verifyOTP = async (userId, OTP) => {
   }
 };
 
-
 //remove user  __ADMIN
-const removeUser=async(userId)=>{
+const removeUser = async (userId) => {
   try {
     return await userModel.findByIdAndRemove(userId);
   } catch (error) {
     throw error;
   }
-}
+};
+
+//get users
+const getUsers = async () => {
+  try {
+    return await userModel.find().select("-password").lean();
+  } catch (error) {
+    throw error;
+  }
+};
 
 module.exports = {
   createUser,
@@ -75,4 +83,5 @@ module.exports = {
   updateUser,
   verifyOTP,
   removeUser,
+  getUsers,
 };

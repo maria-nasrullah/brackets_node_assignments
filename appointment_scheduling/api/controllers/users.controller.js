@@ -18,6 +18,27 @@ const randomBytes = promisify(randomBytesCb);
 
 //methods
 
+//get all users
+const getAllUsers = async (req, res) => {
+  try {
+    const existedUsers = await users.getUsers();
+    const user=req.user;
+    if (!users) {
+      res.status(404).json({
+        success: false,
+        msg: "users not found",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      users: existedUsers,
+      user
+    });
+  } catch (error) {
+    res.status(501).json({ error: "INTERNAL SERVER ERROR" });
+  }
+};
+
 //register user
 const register = async (req, res) => {
   try {
@@ -122,11 +143,10 @@ const login = async (req, res) => {
     const toBeUpdate = { $addToSet: { uniqueKeys: uniqueKey }, OTP: "" };
     const updatedUser = await users.updateUser(matchedUserId, toBeUpdate);
 
+  
     if (updatedUser) {
-      res.status(200).json({
-        messsage: "login successful",
-        token,
-      });
+      res.status(200).json({message:"login successfull",token,user:updatedUser})
+      
     }
   } catch (error) {
     res.status(501).json({ error: "INTERNAL SERVER ERROR" });
@@ -278,4 +298,5 @@ module.exports = {
   OTPVerification,
   updateUser,
   deleteUser,
+  getAllUsers,
 };
