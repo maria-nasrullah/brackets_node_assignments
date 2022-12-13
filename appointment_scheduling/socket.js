@@ -1,8 +1,6 @@
 const MessageService = require("./api/services/messages.services");
 
 function listenEvents(io) {
-  let users = [];
-
   io.on("connection", (socket) => {
     console.log(`${socket.id} user just connected!`);
 
@@ -14,11 +12,7 @@ function listenEvents(io) {
 
     socket.on("disconnect", () => {
       console.log("A user disconnected");
-      //Updates the list of users when a user disconnects from the server
-      users = users.filter((user) => user.socketID !== socket.id);
-      // console.log(users);
-      //Sends the list of users to the client
-      io.emit("newUserResponse", users);
+
       socket.disconnect();
     });
   });
