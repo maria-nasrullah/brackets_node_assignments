@@ -1,4 +1,6 @@
+//adding dependencies
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const { SUBSRIPTION_AMOUNT } = require("../../config/constants");
 
 const stripeCustomer = async (user) => {
   //getting customer Id from stripe
@@ -37,12 +39,13 @@ const stripeSubscription = async (user) => {
 
   //getting price id from stripe
   const price = await stripe.prices.create({
-    unit_amount: 500,
+    unit_amount: SUBSRIPTION_AMOUNT[0],
     currency: "usd",
     recurring: { interval: "month" },
     product: user.stripeProductId,
   });
   user.stripePriceId = price.id;
+  const stripePrice = price.unit_amount;
 
   //getting subscription id from stripe
   const subscription = await stripe.subscriptions.create({
@@ -51,7 +54,7 @@ const stripeSubscription = async (user) => {
   });
   user.stripeSubscriptionId = subscription.id;
 
-  return user;
+  return { user, stripePrice };
 };
 
 module.exports = { stripeCustomer, stripeSubscription };

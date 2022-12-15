@@ -55,6 +55,7 @@ const userSchema = new mongoose.Schema(
     stripeProductId: { type: String },
     stripePriceId: { type: String },
     stripeSubscriptionId: { type: String },
+    stripeReceiptUrl: { type: String },
   },
   {
     timestamps: true,

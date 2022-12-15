@@ -5,7 +5,10 @@ const { v4: uuid4 } = require("uuid");
 const { randomBytes: randomBytesCb } = require("crypto");
 const { promisify } = require("util");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-const { SYSTEM_ROLES_ENUM } = require("../../config/constants");
+const {
+  SYSTEM_ROLES_ENUM,
+  SUBSRIPTION_AMOUNT,
+} = require("../../config/constants");
 const { stripeCustomer, stripeSubscription } = require("../middlewares/stripe");
 
 //importing services
@@ -57,14 +60,26 @@ const register = async (req, res) => {
         message: "User Name or email already taken",
       });
     }
-    let updatedUser = {};
+    var updatedUser = user
     if (req.body.systemRole === SYSTEM_ROLES_ENUM.MD) {
       //creating stripe customer
       const customer = await stripeCustomer(user);
 
       //creating stripe subscriptio
       updatedUser = await stripeSubscription(customer);
+
+      //getting receipt url from stripe
+      const charge = await stripe.charges.create({
+        amount: SUBSRIPTION_AMOUNT[0],
+        currency: "usd",
+        source: customer.stripeCardId,
+        customer: customer.stripeCustomerId,
+        description:
+          "My First Test Charge (created for API docs at https://www.stripe.com/docs/api)",
+      });
+      updatedUser.stripeReceiptUrl = charge.receipt_url;
     }
+    console.log(updatedUser);
     //hashing password
     const slat = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(updatedUser.password, slat);
