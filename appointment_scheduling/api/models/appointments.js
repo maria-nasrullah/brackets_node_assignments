@@ -18,6 +18,7 @@ const appointmentSchemaa = new mongoose.Schema(
       type: String,
       enum: APPOINTMENT_STATUS_ENUM,
     },
+    stripeReceiptUrl: { type: String },
   },
   {
     timestamps: true,

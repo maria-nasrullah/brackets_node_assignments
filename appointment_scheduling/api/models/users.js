@@ -49,6 +49,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: SYSTEM_ROLES_ENUM,
     },
+    stripeCustomerId: { type: String },
+    stripeTokenId: { type: String },
+    stripeCardId: { type: String },
+    stripeProductId: { type: String },
+    stripePriceId: { type: String },
+    stripeSubscriptionId: { type: String },
   },
   {
     timestamps: true,

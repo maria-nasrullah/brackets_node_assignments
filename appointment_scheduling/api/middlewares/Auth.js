@@ -12,7 +12,6 @@ module.exports = async (req, res, next) => {
     }
     token = token.split(" ")[1];
     //getting decoded token
-    console.log(token);
     const decoded = JWT.verify(token, process.env.SECRET_KEY);
     if (!decoded._id) {
       return res.status(400).json({

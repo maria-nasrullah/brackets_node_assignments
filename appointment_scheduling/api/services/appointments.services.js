@@ -26,4 +26,15 @@ const updateAppointment = async (appointmentId, toBeUpdate) => {
   }
 };
 
-module.exports = { scheduledAppointment, updateAppointment };
+//get existing appointment
+const existingAppointment = async (appointmentId) => {
+  try {
+    // const existedAppointment = await AppointmentModel.findById(appointmentId).populate({path:'patient',model:'Patient',select:'_id'});
+        const existedAppointment = await AppointmentModel.findById(appointmentId).populate('patient');
+    return existedAppointment;
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports = { scheduledAppointment, updateAppointment,existingAppointment };

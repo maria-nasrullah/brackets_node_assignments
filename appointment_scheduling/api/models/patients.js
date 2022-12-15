@@ -32,6 +32,15 @@ const patientSchema = new mongoose.Schema(
     diseaseDetail: {
       type: String,
     },
+    stripeCustomerId: {
+      type: String,
+    },
+    stripeCardId: {
+      type: String,
+    },
+    stripeTokenId: {
+      type: String,
+    },
   },
   {
     timestamps: true,

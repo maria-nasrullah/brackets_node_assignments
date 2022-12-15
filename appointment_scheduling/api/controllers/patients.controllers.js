@@ -1,6 +1,9 @@
 //importing services
 const Patients = require("../services/patients.services");
 
+//importing middlewares
+const { stripeCustomer } = require("../middlewares/stripe");
+
 //methods
 
 //creating patient
@@ -17,9 +20,11 @@ const createPatient = async (req, res) => {
         message: "Patient's CNIC has already been taken",
       });
     }
+    //creating stripe customer
+    const updatedPatient = await stripeCustomer(patient);
 
     // creating user
-    const createdPatient = await Patients.patientCreate(patient);
+    const createdPatient = await Patients.patientCreate(updatedPatient);
     res.status(201).json({
       message: "Patient created successfully",
       createdPatient,

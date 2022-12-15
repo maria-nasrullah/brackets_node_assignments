@@ -4,6 +4,9 @@ const JWT = require("jsonwebtoken");
 const { v4: uuid4 } = require("uuid");
 const { randomBytes: randomBytesCb } = require("crypto");
 const { promisify } = require("util");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const { SYSTEM_ROLES_ENUM } = require("../../config/constants");
+const { stripeCustomer, stripeSubscription } = require("../middlewares/stripe");
 
 //importing services
 const users = require("../services/users.services");
@@ -22,7 +25,7 @@ const randomBytes = promisify(randomBytesCb);
 const getAllUsers = async (req, res) => {
   try {
     const existedUsers = await users.getUsers();
-    const user=req.user;
+    const user = req.user;
     if (!users) {
       res.status(404).json({
         success: false,
@@ -32,7 +35,7 @@ const getAllUsers = async (req, res) => {
     res.status(200).json({
       success: true,
       users: existedUsers,
-      user
+      user,
     });
   } catch (error) {
     res.status(501).json({ error: "INTERNAL SERVER ERROR" });
@@ -54,14 +57,21 @@ const register = async (req, res) => {
         message: "User Name or email already taken",
       });
     }
+    let updatedUser = {};
+    if (req.body.systemRole === SYSTEM_ROLES_ENUM.MD) {
+      //creating stripe customer
+      const customer = await stripeCustomer(user);
 
+      //creating stripe subscriptio
+      updatedUser = await stripeSubscription(customer);
+    }
     //hashing password
     const slat = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(user.password, slat);
-    user["password"] = hashedPassword;
+    const hashedPassword = await bcrypt.hash(updatedUser.password, slat);
+    updatedUser["password"] = hashedPassword;
 
     // creating user
-    const createdUser = await users.createUser(user);
+    const createdUser = await users.createUser(updatedUser);
     res.status(201).json({
       message: "User created successfully",
       createdUser,
@@ -143,10 +153,10 @@ const login = async (req, res) => {
     const toBeUpdate = { $addToSet: { uniqueKeys: uniqueKey }, OTP: "" };
     const updatedUser = await users.updateUser(matchedUserId, toBeUpdate);
 
-  
     if (updatedUser) {
-      res.status(200).json({message:"login successfull",token,user:updatedUser})
-      
+      res
+        .status(200)
+        .json({ message: "login successfull", token, user: updatedUser });
     }
   } catch (error) {
     res.status(501).json({ error: "INTERNAL SERVER ERROR" });

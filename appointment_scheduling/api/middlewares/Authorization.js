@@ -2,6 +2,7 @@ const AuthorizeTo = (...systemRoles) => {
   return async (req, res, next) => {
     try {
       const { user } = req;
+    
       if (!systemRoles.includes(user?.systemRole)) {
         return res.status(401).json({
           message: "You are unauthorize.",

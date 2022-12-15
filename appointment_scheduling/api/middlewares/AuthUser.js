@@ -7,7 +7,6 @@ module.exports = async (req, res, next) => {
     const { token } = req;
     const tokenId = token._id;
     const userExist = await getUserById(tokenId);
-console.log("auth2");
     req.user = userExist;
     if (!userExist?.uniqueKeys.includes(token.uniqueKey)) {
       return res.status(400).json({ msg: "session ended" });
