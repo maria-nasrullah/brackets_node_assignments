@@ -6,6 +6,7 @@ const { Server } = require("socket.io");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const {Worker}=require("worker_threads");
 
 //socket importing
 
@@ -56,14 +57,40 @@ app.use(function (req, res, next) {
   next();
 });
 
+
+
 //using routes
 //testing route
 app.get("/", (req, res) => {
-  res.status("200").json({
+  res.status(200).json({
     msg: "server connected",
   });
 });
 
+
+//using worker
+let counter=1
+
+app.get("/counter",(req,res)=>{
+  counter++;
+  res.status(200).json({
+    counter
+  })
+})
+
+app.get('/heavycounter',(req,res) => {
+  
+  const worker=new Worker('./worker.js');
+
+  worker.on('message',(data)=>{
+
+    res.status(200).json({data})
+     
+    })
+  })
+  
+
+  //end of worker
 app.use("/users", userRouter);
 
 app.use("/twilio", twilioRouter);
